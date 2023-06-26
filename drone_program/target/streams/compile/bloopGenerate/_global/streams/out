@@ -1,0 +1,4 @@
+[debug] [drone_program] Classpath dependencies List()
+[debug] [drone_program] Dependencies from configurations List()
+[debug] Bloop wrote the configuration of project 'drone_program' to '/home/coartix/DataEngineering/INDE_Project/drone_program/.bloop/drone_program.json'
+[success] Generated .bloop/drone_program.json
