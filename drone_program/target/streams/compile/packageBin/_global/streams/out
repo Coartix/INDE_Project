@@ -1,1 +1,25 @@
-[0m[[0m[0mdebug[0m] [0m[0mJar uptodate: /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/drone-message_2.13-1.0.jar[0m
+[0m[[0m[0mdebug[0m] [0m[0mPackaging /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/drone-message_2.13-1.0.jar ...[0m
+[0m[[0m[0mdebug[0m] [0m[0mInput file mappings:[0m
+[0m[[0m[0mdebug[0m] [0m[0m	KafkaProducerDrone$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/KafkaProducerDrone$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	KafkaProducerDrone$anon$importedEncoder$macro$19$1$$anon$2.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/KafkaProducerDrone$anon$importedEncoder$macro$19$1$$anon$2.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	DroneGenerator$Drone$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/DroneGenerator$Drone$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	KafkaProducerDrone.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/KafkaProducerDrone.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	KafkaProducerDrone$Report.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/KafkaProducerDrone$Report.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	KafkaProducerDrone$anon$importedEncoder$macro$19$1$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/KafkaProducerDrone$anon$importedEncoder$macro$19$1$$anon$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	KafkaProducerDrone$Report$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/KafkaProducerDrone$Report$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	KafkaProducerDrone$anon$importedEncoder$macro$19$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/KafkaProducerDrone$anon$importedEncoder$macro$19$1.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	DroneGenerator.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/DroneGenerator.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	DroneGenerator$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/DroneGenerator$.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	DroneGenerator$Drone.class[0m
+[0m[[0m[0mdebug[0m] [0m[0m	  /home/coartix/DataEngineering/INDE_Project/drone_program/target/scala-2.13/classes/DroneGenerator$Drone.class[0m
+[0m[[0m[0mdebug[0m] [0m[0mDone packaging.[0m
