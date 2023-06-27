@@ -10,15 +10,13 @@ import io.circe.syntax.EncoderOps
 import java.util.concurrent.Executors
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Promise}
 import scala.util.{Failure, Success}
 
-import java.util.concurrent.{ScheduledExecutorService, TimeUnit}
+import java.util.concurrent.{ScheduledExecutorService, TimeUnit, Executors}
 
-import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
@@ -26,11 +24,11 @@ import KafkaProducerDrone.sendReport
 
 object DroneGenerator {
 
-    case class Drone(id: Int, location: (Double, Double)) {
+    case class Drone(id: Int, location: List[Double]) {
         // Method to launch a script at a certain path
-        def launchScript(path: String): Unit = {
+        def launchScript(): Unit = {
             // Execute the script logic here
-            sendReport(id)
+            sendReport(id, location)
             // println(s"Drone $id launched script at path: $path")
         }
         
@@ -42,7 +40,7 @@ object DroneGenerator {
                 () => {
                     try {
                         // Call the script method
-                        launchScript(scriptPath)
+                        sendReport(id, location)
                     } catch {
                             case ex: Exception => promise.failure(ex)
                     }
@@ -56,25 +54,20 @@ object DroneGenerator {
         
     }
 
-    def generateDrone(n : Int): List[Drone] = {
-        List(Drone(0, (0.0, 0.0)), Drone(1, (50.0, 50.0)), Drone(2, (100.0, 100.0)))
+    def generateDrone(n : Int): List[Drone] = n match {
+        case 0 => Nil
+        case n => Drone(n, List(0.0, 0.0)) :: generateDrone(n - 1)
+        // List(Drone(0, (0.0, 0.0)), Drone(1, (50.0, 50.0)), Drone(2, (100.0, 100.0)))
     }
 
     def main(args: Array[String]) : Unit = {
-        val drones = generateDrone(3)
+        val drones = generateDrone(5)
+        
         // Create a single-threaded executor service
         val executorService = Executors.newSingleThreadScheduledExecutor()
 
         // Schedule script execution for each drone
         val futures: List[Future[Unit]] = drones.map(_.scheduleScriptExecution("/path/to/script", executorService))
-
-        // Wait for all futures to complete (if needed)
-        // val allFutures: Future[List[Unit]] = Future.sequence(futures)
-
-        /*allFutures.onComplete {
-            case Success(_) => println("All script executions completed successfully")
-            case Failure(ex) => println(s"Script execution failed: ${ex.getMessage}")
-        }*/
 
         // Wait for all futures to complete
         val allFutures: Future[List[Unit]] = Future.sequence(futures)
