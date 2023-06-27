@@ -12,11 +12,7 @@ object KafkaProducerDrone {
 
   case class Report(id: Int, location: (Double, Double), citizens: List[String], score: List[Double], words: List[String])
 
-  def main(args: Array[String]): Unit = {
-    // Print hello
-    println("Hello, world!")
-
-    // Create Kafka producer
+  def sendReport(droneId : Int): Unit = {
     val props = new Properties()
     props.put("bootstrap.servers", "localhost:9092")
     props.put(
@@ -28,26 +24,24 @@ object KafkaProducerDrone {
       "org.apache.kafka.common.serialization.StringSerializer"
     )
 
+    // Create producer
     val producer = new KafkaProducer[String, String](props)
-
-    /* val position = "latitude: 37.7749, longitude: -122.4194"
-    val number = 42
-
-    val record = new ProducerRecord[String, String](
-      "drone-message",
-      position,
-      number.toString
-    )*/
-
+    
+    // Topic name
     val topic = "drone-message"
 
-    val obj = Report(69, (42.12, 42.23), List("Pierre", "Hugo", "Param", "DarkSasuke"), List(75.3, 75.3, 50.4, 6.9), List("love", "peace", "happy", "hate"))
+    // Create Report and serialize
+    val obj = Report(droneId, (42.12, 42.23), List("Pierre", "Hugo", "Param", "DarkSasuke"), List(75.3, 75.3, 50.4, 6.9), List("love", "peace", "happy", "hate"))
     val json: Json = obj.asJson
 
-    val record = new ProducerRecord[String, String](topic, "1", json.toString)
 
+    // Create Producer Record
+    val record = new ProducerRecord[String, String](topic, droneId.toString, json.toString)
+
+    // Send Record
     producer.send(record)
 
+    // Close producer
     producer.close()
   }
 }

@@ -22,13 +22,16 @@ import java.util.concurrent.{Executors, ScheduledExecutorService, TimeUnit}
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
+import KafkaProducerDrone.sendReport
+
 object DroneGenerator {
 
     case class Drone(id: Int, location: (Double, Double)) {
         // Method to launch a script at a certain path
         def launchScript(path: String): Unit = {
             // Execute the script logic here
-            println(s"Drone $id launched script at path: $path")
+            sendReport(id)
+            // println(s"Drone $id launched script at path: $path")
         }
         
         // Method to schedule script execution every minute
