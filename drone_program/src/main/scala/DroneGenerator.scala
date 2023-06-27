@@ -33,7 +33,7 @@ object DroneGenerator {
         }
         
         // Method to schedule script execution every minute
-        def scheduleScriptExecution(scriptPath: String, executorService: ScheduledExecutorService)(implicit ec: ExecutionContext): Future[Unit] = {
+        def scheduleScriptExecution(executorService: ScheduledExecutorService)(implicit ec: ExecutionContext): Future[Unit] = {
             val promise = Promise[Unit]()
             // Schedule the script execution every minute
             executorService.scheduleAtFixedRate(
@@ -61,13 +61,13 @@ object DroneGenerator {
     }
 
     def main(args: Array[String]) : Unit = {
-        val drones = generateDrone(5)
+        val drones = generateDrone(8)
         
         // Create a single-threaded executor service
         val executorService = Executors.newSingleThreadScheduledExecutor()
 
         // Schedule script execution for each drone
-        val futures: List[Future[Unit]] = drones.map(_.scheduleScriptExecution("/path/to/script", executorService))
+        val futures: List[Future[Unit]] = drones.map(_.scheduleScriptExecution(executorService))
 
         // Wait for all futures to complete
         val allFutures: Future[List[Unit]] = Future.sequence(futures)
