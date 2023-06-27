@@ -10,9 +10,9 @@ import io.circe.syntax.EncoderOps
 
 object KafkaProducerDrone {
 
-  case class Report(id: Int, location: (Double, Double), citizens: List[String], score: List[Double], words: List[String])
+  case class Report(id: Int, location: List[Double], citizens: List[String], score: List[Double], words: List[String])
 
-  def sendReport(droneId : Int): Unit = {
+  def sendReport(droneId : Int, location: List[Double]): Unit = {
     val props = new Properties()
     props.put("bootstrap.servers", "localhost:9092")
     props.put(
@@ -31,7 +31,7 @@ object KafkaProducerDrone {
     val topic = "drone-message"
 
     // Create Report and serialize
-    val obj = Report(droneId, (42.12, 42.23), List("Pierre", "Hugo", "Param", "DarkSasuke"), List(75.3, 75.3, 50.4, 6.9), List("love", "peace", "happy", "hate"))
+    val obj = Report(droneId, location, List("Pierre", "Hugo", "Param", "DarkSasuke"), List(75.3, 75.3, 50.4, 6.9), List("love", "peace", "happy", "hate"))
     val json: Json = obj.asJson
 
 
