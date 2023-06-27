@@ -22,15 +22,11 @@ import scala.concurrent.duration.Duration
 
 import KafkaProducerDrone.sendReport
 
+import scala.util.Random
+
 object DroneGenerator {
 
     case class Drone(id: Int, location: List[Double]) {
-        // Method to launch a script at a certain path
-        def launchScript(): Unit = {
-            // Execute the script logic here
-            sendReport(id, location)
-            // println(s"Drone $id launched script at path: $path")
-        }
         
         // Method to schedule script execution every minute
         def scheduleScriptExecution(executorService: ScheduledExecutorService)(implicit ec: ExecutionContext): Future[Unit] = {
@@ -40,7 +36,7 @@ object DroneGenerator {
                 () => {
                     try {
                         // Call the script method
-                        sendReport(id, location)
+                        sendReport(id, moveDrone(location))
                     } catch {
                             case ex: Exception => promise.failure(ex)
                     }
@@ -54,14 +50,18 @@ object DroneGenerator {
         
     }
 
+    def moveDrone(location : List[Double]): List[Double] = location match {
+        case Nil => Nil
+        case e::tail => e + Random.nextInt(7) - 3 :: moveDrone(tail)
+    }
+
     def generateDrone(n : Int): List[Drone] = n match {
         case 0 => Nil
-        case n => Drone(n, List(0.0, 0.0)) :: generateDrone(n - 1)
-        // List(Drone(0, (0.0, 0.0)), Drone(1, (50.0, 50.0)), Drone(2, (100.0, 100.0)))
+        case n => Drone(n, List(Random.nextInt(100), Random.nextInt(100))) :: generateDrone(n - 1)
     }
 
     def main(args: Array[String]) : Unit = {
-        val drones = generateDrone(8)
+        val drones = generateDrone(3)
         
         // Create a single-threaded executor service
         val executorService = Executors.newSingleThreadScheduledExecutor()
