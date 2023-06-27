@@ -26,6 +26,7 @@ version := "1.0"
 libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "2.1.1"
 libraryDependencies += "org.apache.kafka" %% "kafka" % "3.4.0"
 
+
 // Here, `libraryDependencies` is a set of dependencies, and by using `+=`,
 // we're adding the scala-parser-combinators dependency to the set of dependencies
 // that sbt will go and fetch when it starts up.
@@ -49,6 +50,10 @@ libraryDependencies += "org.apache.kafka" %% "kafka" % "3.4.0"
 // regular Scala. For example, notice in this build file that it's not required
 // to put our settings into an enclosing object or class. Always remember that
 // sbt is a bit different, semantically, than vanilla Scala.
+
+libraryDependencies += "io.circe" %% "circe-core" % "0.14.1"
+libraryDependencies += "io.circe" %% "circe-generic" % "0.14.1"
+libraryDependencies += "io.circe" %% "circe-parser" % "0.14.1"
 
 // ============================================================================
 
