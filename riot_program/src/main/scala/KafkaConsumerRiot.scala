@@ -46,6 +46,10 @@ object KafkaConsumerRiot {
     if (alert != "") {
       println(s"Alert: $alert")
       println(s"Location: $location")
+      println(s"id: ${report.id}")
+
+      // Send alert to Riot API
+
     }
   }
 
