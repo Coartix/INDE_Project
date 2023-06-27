@@ -3,3 +3,7 @@
 .metals
 .bsp
 .bloop
+
+kafka*
+target
+project

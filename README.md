@@ -39,4 +39,5 @@ AWS Secret Access Key [None]: WyKD6D5jEFWdh61RBahcLuvCmIZsodzho0Vfqkqd
 Default region name [None]: eu-west-3
 Default output format [None]: json
 """
-    
+
+aws s3 ls   Should display all buckets
