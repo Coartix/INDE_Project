@@ -5,6 +5,8 @@ object KafkaProducerDrone {
 
   case class Report(id: Int, location: (Int, Int), citizens: List[String], score: List[Int], words: List[String])
 
+  case class Dummy(s1: String, s2: String, s3: String)
+
   def main(args: Array[String]): Unit = {
     // Print hello
     println("Hello, world!")
@@ -34,7 +36,10 @@ object KafkaProducerDrone {
 
     val topic = "drone-message"
 
-    val record = new ProducerRecord[String, String](topic, i.toString, "My Site is sparkbyexamples.com " + i)
+    val obj = Dummy("Hello", "World", "Scala")
+    val json: Json = obj.asJson
+
+    val record = new ProducerRecord[String, String](topic, "1", json)
 
     producer.send(record)
 
