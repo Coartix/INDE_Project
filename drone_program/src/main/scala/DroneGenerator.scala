@@ -31,7 +31,7 @@ object DroneGenerator {
     case class Drone(id: Int, location: List[Double]) {
         
         // Method to schedule script execution every minute
-        def scheduleScriptExecution(executorService: ScheduledExecutorService, citizenList: List[(String, Double, Double)])(implicit ec: ExecutionContext): Future[Unit] = {
+        def scheduleScriptExecution(executorService: ScheduledExecutorService, citizenList: List[(String, Double, Double, Double)])(implicit ec: ExecutionContext): Future[Unit] = {
             val promise = Promise[Unit]()
             // Schedule the script execution every minute
             executorService.scheduleAtFixedRate(

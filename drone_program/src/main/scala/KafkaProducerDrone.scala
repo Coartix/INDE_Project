@@ -34,13 +34,13 @@ object KafkaProducerDrone {
     sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
   }
 
-  def sendReport(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double)]): Unit = {
+  def sendReport(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Double)]): Unit = {
 
     // Define the maximum distance
     val maxDistance = 10.0
 
     // Filter the citizenList based on the distance
-    val filteredCitizens = citizenList.filter { case (_, x, y) =>
+    val filteredCitizens = citizenList.filter { case (_, x, y, _) =>
       calculateDistance((getX(location), getY(location)), (x, y)) <= maxDistance
     }
 
