@@ -13,10 +13,12 @@ import scala.math.{pow, sqrt}
 import WorldGenerator.getCitizenList
 import WorldGenerator.getWordList
 
+import java.time.{Instant, LocalDateTime, ZoneOffset, Duration}
+
 
 object KafkaProducerDrone {
 
-  case class Report(id: Int, location: List[Double], citizens: List[String], score: List[Double], words: List[String])
+  case class Report(id: Int, location: List[Double], citizens: List[String], score: List[Double], words: List[String], timestamp: Instant)
 
   def getX(location: List[Double]): Double = location match {
     case Nil => 0
@@ -35,7 +37,24 @@ object KafkaProducerDrone {
     sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
   }
 
-  def sendReport(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Double)]): Unit = {
+  def getTimestamp(originTimestamp: Instant): Instant = {
+    val currentTimestamp: Instant = Instant.now()
+
+    // Calculate the duration between the two timestamps
+    val duration: Duration = Duration.between(originTimestamp, currentTimestamp)
+
+    // Get the number of seconds from the duration
+    val minutesToAdd: Long = duration.getSeconds() / 10
+
+    val minutes: Duration = Duration.ofMinutes(minutesToAdd)
+
+    // Add the specified duration to the timestamp
+    val newTimestamp: Instant = originTimestamp.plus(minutes)
+
+    newTimestamp
+  }
+
+  def sendReport(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Double)], originTimestamp: Instant): Unit = {
 
     // Define the maximum distance
     val maxDistance = 10.0
@@ -65,7 +84,7 @@ object KafkaProducerDrone {
     // List("love", "peace", "happy", "hate")
 
     // Create Report and serialize
-    val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), getWordList(filteredCitizens))
+    val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), getWordList(filteredCitizens), getTimestamp(originTimestamp))
     val json: Json = obj.asJson
 
     // Create Producer Record
