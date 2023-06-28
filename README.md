@@ -41,3 +41,12 @@ Default output format [None]: json
 """  
 
 aws s3 ls   Should display all buckets
+
+export AWS_ACCESS_KEY_ID=$(grep aws_access_key_id ~/.aws/credentials | awk '{print $3}')
+export AWS_SECRET_ACCESS_KEY=$(grep aws_secret_access_key ~/.aws/credentials | awk '{print $3}')
+
+Paste the previous commands in the ~/.bashrc file:
+nano ~/.bashrc
+
+source ~/.bashrc
+
