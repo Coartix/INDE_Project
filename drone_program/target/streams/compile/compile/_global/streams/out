@@ -1,5 +1,4 @@
-[0m[[0m[31merror[0m] [0m[0m/home/coartix/DataEngineering/INDE_Project/drone_program/src/main/scala/Main.scala:5:7: cannot override final member:[0m
-[0m[[0m[31merror[0m] [0m[0mfinal def main(args: Array[String]): Unit (defined in trait App)[0m
-[0m[[0m[31merror[0m] [0m[0m  def main(args: Array[String]): Unit = {[0m
-[0m[[0m[31merror[0m] [0m[0m      ^[0m
+[0m[[0m[31merror[0m] [0m[0m/home/pili/scia/INDE_Project/drone_program/src/main/scala/WorldGenerator.scala:12:79: value toDouble is not a member of (String, Double, Double, Double)[0m
+[0m[[0m[31merror[0m] [0m[0m                (name, x.toDouble, y.toDouble, Random.nextDouble() * 25 + 75).toDouble[0m
+[0m[[0m[31merror[0m] [0m[0m                                                                              ^[0m
 [0m[[0m[31merror[0m] [0m[0mone error found[0m

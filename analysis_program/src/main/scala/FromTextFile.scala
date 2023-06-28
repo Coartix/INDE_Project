@@ -6,7 +6,7 @@ object FromTextFile {
     // Analyse data
     
     // first analysis
-    // computen the average score of each citizen
+    // compute the average score of each citizen
     val avg_score = df
       .groupBy("citizen")
       .agg(avg("score"))
@@ -14,6 +14,28 @@ object FromTextFile {
       .sort(desc("avg_score"))
 
     avg_score.show(false)
+
+    // and sort every location by the average score of its citizens
+    val avg_score_by_location = df
+      .groupBy("location")
+      .agg(avg("score"))
+      .withColumnRenamed("avg(score)", "avg_score")
+      .sort(desc("avg_score"))
+
+    avg_score_by_location.show(false)
+
+    // second analysis
+    // show words used by citizen with score < 0.25 and the number of times they used it
+    val words_below_threshold = df
+    .filter(col("score") < 25)
+    .groupBy("word")
+    .agg(count("word").as("times_used"))
+    .sort(desc("times_used"))
+
+    words_below_threshold.show(false)
+
+    // third analysis
+    // 
   }
 
 

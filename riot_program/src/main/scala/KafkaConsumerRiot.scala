@@ -7,16 +7,19 @@ import scala.collection.JavaConverters._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
+import java.time.{Instant, LocalDateTime, ZoneOffset, Duration}
+
 object KafkaConsumerRiot {
-  case class Report(id: Int, location: List[Double], citizens: List[String], score: List[Double], words: List[String])
+  case class Report(id: Int, location: List[Double], citizens: List[String], score: List[Int], words: List[String], timestamp: Instant)
 
   object Report {
     implicit val reportFormat: Format[Report] = (
       (JsPath \ "id").format[Int] and
       (JsPath \ "location").format[List[Double]] and
       (JsPath \ "citizens").format[List[String]] and
-      (JsPath \ "score").format[List[Double]] and
-      (JsPath \ "words").format[List[String]]
+      (JsPath \ "score").format[List[Int]] and
+      (JsPath \ "words").format[List[String]] and
+      (JsPath \ "timestamp").format[Instant]
     )(Report.apply, unlift(Report.unapply))
   }
 
@@ -26,7 +29,7 @@ object KafkaConsumerRiot {
     props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092")
     props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getName)
     props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, classOf[StringDeserializer].getName)
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, "drone-consumer")
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, "drone-consumer-riot")
     props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")
 
     val consumer = new KafkaConsumer[String, String](props)
@@ -41,12 +44,14 @@ object KafkaConsumerRiot {
     val citizens = report.citizens
     val location = report.location
 
-    val alert = score.zip(citizens).filter(_._1 > 75.0).map(_._2).mkString(", ")
+    val alert = score.zip(citizens).filter(_._1 > 85.0).map(_._2).mkString(", ")
 
     if (alert != "") {
       println(s"Alert: $alert")
       println(s"Location: $location")
       println(s"id: ${report.id}")
+      println(s"timestamp: ${report.timestamp}")
+      println(s"drone id: ${report.id}")
 
       // Send alert to Riot API
 
