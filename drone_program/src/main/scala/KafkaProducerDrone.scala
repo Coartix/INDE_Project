@@ -49,9 +49,7 @@ object KafkaProducerDrone {
     val minutes: Duration = Duration.ofMinutes(minutesToAdd)
 
     // Add the specified duration to the timestamp
-    val newTimestamp: Instant = originTimestamp.plus(minutes)
-
-    newTimestamp
+    originTimestamp.plus(minutes)
   }
 
   def sendReport(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Double)], originTimestamp: Instant): Unit = {
@@ -80,8 +78,6 @@ object KafkaProducerDrone {
     
     // Topic name
     val topic = "drone-message"
-
-    // List("love", "peace", "happy", "hate")
 
     // Create Report and serialize
     val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), getWordList(filteredCitizens), getTimestamp(originTimestamp))
