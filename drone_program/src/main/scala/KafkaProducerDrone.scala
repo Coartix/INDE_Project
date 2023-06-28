@@ -15,6 +15,8 @@ import WorldGenerator.getWordList
 
 import java.time.{Instant, LocalDateTime, ZoneOffset, Duration}
 
+import java.time.temporal.ChronoUnit
+
 
 object KafkaProducerDrone {
 
@@ -37,23 +39,11 @@ object KafkaProducerDrone {
     sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
   }
 
-  def getTimestamp(originTimestamp: Instant): Instant = {
-    val currentTimestamp: Instant = Instant.now()
-
-    // Calculate the duration between the two timestamps
-    val duration: Duration = Duration.between(originTimestamp, currentTimestamp)
-
-    // Get the number of seconds from the duration
-    val minutesToAdd: Long = duration.getSeconds() / 10
-
-    val minutes: Duration = Duration.ofMinutes(minutesToAdd)
-
-    // Add the specified duration to the timestamp
-    originTimestamp.plus(minutes)
+  def getTimestamp(originTimestamp: Instant, nbIter: Int): Instant = {
+    originTimestamp.plus(nbIter, ChronoUnit.MINUTES)
   }
 
-  def sendReport(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Int)], originTimestamp: Instant): Unit = {
-
+  def getMessage(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Int)], originTimestamp: Instant, nbIter: Int): Json = {
     // Define the maximum distance
     val maxDistance = 10.0
 
@@ -80,16 +70,9 @@ object KafkaProducerDrone {
     val topic = "drone-message"
 
     // Create Report and serialize
-    val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), getWordList(filteredCitizens), getTimestamp(originTimestamp))
-    val json: Json = obj.asJson
+    val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), getWordList(filteredCitizens), getTimestamp(originTimestamp, nbIter))
+    // val json: Json = obj.asJson
 
-    // Create Producer Record
-    val record = new ProducerRecord[String, String](topic, droneId.toString, json.toString)
-
-    // Send Record
-    producer.send(record)
-
-    // Close producer
-    producer.close()
+    obj.asJson
   }
 }

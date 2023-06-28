@@ -23,36 +23,13 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import java.time.Instant
 
-import KafkaProducerDrone.sendReport
+import KafkaProducerDrone.getMessage
 import WorldGenerator.getCitizenList
 
 
 object DroneGenerator {
 
-    case class Drone(id: Int, location: List[Double]) {
-        
-        // Method to schedule script execution every minute
-        def scheduleScriptExecution(executorService: ScheduledExecutorService, citizenList: List[(String, Double, Double, Int)], originTimestamp: Instant)(implicit ec: ExecutionContext): Future[Unit] = {
-            val promise = Promise[Unit]()
-            // Schedule the script execution every minute
-            executorService.scheduleAtFixedRate(
-                () => {
-                    try {
-                        // Call the script method
-                        sendReport(id, moveDrone(location), citizenList, originTimestamp)
-                        
-                    } catch {
-                            case ex: Exception => promise.failure(ex)
-                    }
-                },
-                0, // Initial delay before the first execution
-                //1.minute.toSeconds, // Delay between consecutive executions (1 minute in this case)
-                10.seconds.toSeconds,
-                TimeUnit.SECONDS
-            )
-            promise.future
-        }
-    }
+    case class Drone(id: Int, location: List[Double])
 
     def moveDrone(location : List[Double]): List[Double] = location match {
         case Nil => Nil
@@ -64,24 +41,53 @@ object DroneGenerator {
         case n => Drone(n, List(Random.nextInt(100), Random.nextInt(100))) :: generateDrone(n - 1)
     }
 
+    def sendReport(droneId: String, message: Json, producer: KafkaProducer[String, String]): Unit = {
+        // Create Producer Record
+        val record = new ProducerRecord[String, String]("drone-message", droneId, message.toString)
+
+        // Send Record
+        producer.send(record)
+    }
+
+    def simulateIteration(generation: Int, counter: Int, drones: List[Drone], originTimestamp: Instant, citizenList: List[(String, Double, Double, Int)], producer: KafkaProducer[String, String]): Unit = counter match {
+        case counter if (counter == generation) => {
+            val messages = drones.map(drone => (drone.id.toString, getMessage(drone.id, moveDrone(drone.location), citizenList, originTimestamp, counter)))
+            messages.foreach { case (droneId, message) => sendReport(droneId, message, producer) } 
+        }
+        case counter => {
+            val messages = drones.map(drone => (drone.id.toString, getMessage(drone.id, moveDrone(drone.location), citizenList, originTimestamp, counter)))
+            messages.foreach { case (droneId, message) => sendReport(droneId, message, producer) } 
+
+            simulateIteration(generation, counter + 1, drones, originTimestamp, citizenList, producer)
+        }
+    }
+
     def main(args: Array[String]) : Unit = {
-        val drones = generateDrone(1)
+
+        val props = new Properties()
+        props.put("bootstrap.servers", "localhost:9092")
+        props.put(
+            "key.serializer",
+            "org.apache.kafka.common.serialization.StringSerializer"
+        )
+        props.put(
+            "value.serializer",
+            "org.apache.kafka.common.serialization.StringSerializer"
+        )
+
+        // Create producer
+        val producer = new KafkaProducer[String, String](props)
+
+        val drones = generateDrone(2)
         
         val originTimestamp: Instant = Instant.now()
-        // Create a single-threaded executor service
-        val executorService = Executors.newSingleThreadScheduledExecutor()
 
         // Get citizen list
         val citizenList = getCitizenList("../data/citizens.txt")
 
-        // Schedule script execution for each drone
-        val futures: List[Future[Unit]] = drones.map(_.scheduleScriptExecution(executorService, citizenList, originTimestamp))
+        simulateIteration(50, 0, drones, originTimestamp, citizenList, producer)
 
-        // Wait for all futures to complete
-        val allFutures: Future[List[Unit]] = Future.sequence(futures)
-        Await.result(allFutures, Duration.Inf)
-
-        // Shutdown the executor service
-        executorService.shutdown()
+        // Close producer
+        producer.close()
     }
 }
