@@ -1,10 +1,13 @@
 import scala.io.Source
 import scala.util.Random
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.Locale
+
 
 object WorldGenerator {
     def getCitizenList(filePath : String): List[(String, Double, Double, Double)] = {
-        val decimalFormat = new DecimalFormat("#.##")
+        val decimalFormat = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.getDefault))
         Source.fromFile(filePath)
             .getLines()
             .map { line =>
