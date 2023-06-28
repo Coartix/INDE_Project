@@ -18,7 +18,7 @@ import java.time.{Instant, LocalDateTime, ZoneOffset, Duration}
 
 object KafkaProducerDrone {
 
-  case class Report(id: Int, location: List[Double], citizens: List[String], score: List[Double], words: List[String], timestamp: Instant)
+  case class Report(id: Int, location: List[Double], citizens: List[String], score: List[Int], words: List[String], timestamp: Instant)
 
   def getX(location: List[Double]): Double = location match {
     case Nil => 0
@@ -52,7 +52,7 @@ object KafkaProducerDrone {
     originTimestamp.plus(minutes)
   }
 
-  def sendReport(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Double)], originTimestamp: Instant): Unit = {
+  def sendReport(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Int)], originTimestamp: Instant): Unit = {
 
     // Define the maximum distance
     val maxDistance = 10.0

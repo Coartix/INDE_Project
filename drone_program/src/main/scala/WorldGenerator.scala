@@ -1,18 +1,14 @@
 import scala.io.Source
 import scala.util.Random
-import java.text.DecimalFormat
-import java.text.DecimalFormatSymbols
-import java.util.Locale
 
 
 object WorldGenerator {
-    def getCitizenList(filePath : String): List[(String, Double, Double, Double)] = {
-        val decimalFormat = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.getDefault))
+    def getCitizenList(filePath : String): List[(String, Double, Double, Int)] = {
         Source.fromFile(filePath)
             .getLines()
             .map { line =>
                 val Array(name, x, y) = line.split(" ")
-                (name, x.toDouble, y.toDouble, decimalFormat.format(Random.nextDouble() * 25 + 75).toDouble)
+                (name, x.toDouble, y.toDouble, Random.nextInt(26) + 75)
             }.toList
     }
 
@@ -21,17 +17,17 @@ object WorldGenerator {
         Random.shuffle(lines).headOption.getOrElse("")
     }
 
-    def getCitizenWord(harmonyScore: Double): String = Random.nextInt(100) < harmonyScore match {
+    def getCitizenWord(harmonyScore: Int): String = Random.nextInt(100) < harmonyScore match {
         case true => pickRandomWord("../data/good_words.txt")
         case false => pickRandomWord("../data/bad_words.txt")
     }
 
-    def getCitizenWordList(harmonyScore: Double, n : Int): List[String] = n match {
+    def getCitizenWordList(harmonyScore: Int, n : Int): List[String] = n match {
         case 0 => Nil
         case e => getCitizenWord(harmonyScore) :: getCitizenWordList(harmonyScore, e - 1)
     }
 
-    def getWordList(citizenList: List[(String, Double, Double, Double)]): List[String] = {
+    def getWordList(citizenList: List[(String, Double, Double, Int)]): List[String] = {
         citizenList.flatMap { case (_, _, _, harmonyScore) =>
             getCitizenWordList(harmonyScore, 3)
         }
