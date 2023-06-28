@@ -64,7 +64,7 @@ object KafkaProducerDrone {
 
 
     // Create Report and serialize
-    val obj = Report(droneId, location, filteredCitizens.map(_._1) , List(75.3, 75.3, 50.4, 6.9), List("love", "peace", "happy", "hate"))
+    val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), List("love", "peace", "happy", "hate"))
     val json: Json = obj.asJson
 
 
