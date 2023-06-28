@@ -7,6 +7,8 @@ import io.circe.parser._
 import io.circe.syntax._
 import io.circe.syntax.EncoderOps
 
+import scala.util.Random
+
 import java.util.concurrent.Executors
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -21,22 +23,22 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
 import KafkaProducerDrone.sendReport
+import WorldGenerator.getCitizenList
 
-import scala.util.Random
 
 object DroneGenerator {
 
     case class Drone(id: Int, location: List[Double]) {
         
         // Method to schedule script execution every minute
-        def scheduleScriptExecution(executorService: ScheduledExecutorService)(implicit ec: ExecutionContext): Future[Unit] = {
+        def scheduleScriptExecution(executorService: ScheduledExecutorService, citizenList: List[(String, Double, Double)])(implicit ec: ExecutionContext): Future[Unit] = {
             val promise = Promise[Unit]()
             // Schedule the script execution every minute
             executorService.scheduleAtFixedRate(
                 () => {
                     try {
                         // Call the script method
-                        sendReport(id, moveDrone(location))
+                        sendReport(id, moveDrone(location), citizenList)
                     } catch {
                             case ex: Exception => promise.failure(ex)
                     }
@@ -47,7 +49,6 @@ object DroneGenerator {
             )
             promise.future
         }
-        
     }
 
     def moveDrone(location : List[Double]): List[Double] = location match {
@@ -66,8 +67,11 @@ object DroneGenerator {
         // Create a single-threaded executor service
         val executorService = Executors.newSingleThreadScheduledExecutor()
 
+        // Get citizen list
+        val citizenList = getCitizenList("../data/citizens.txt")
+
         // Schedule script execution for each drone
-        val futures: List[Future[Unit]] = drones.map(_.scheduleScriptExecution(executorService))
+        val futures: List[Future[Unit]] = drones.map(_.scheduleScriptExecution(executorService, citizenList))
 
         // Wait for all futures to complete
         val allFutures: Future[List[Unit]] = Future.sequence(futures)

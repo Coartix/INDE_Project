@@ -34,14 +34,11 @@ object KafkaProducerDrone {
     sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2))
   }
 
-  def sendReport(droneId : Int, location: List[Double]): Unit = {
+  def sendReport(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double)]): Unit = {
 
     // Define the maximum distance
     val maxDistance = 10.0
 
-    // Read the file and create the object
-    val citizenList = getCitizenList("../data/citizens.txt")
-    
     // Filter the citizenList based on the distance
     val filteredCitizens = citizenList.filter { case (_, x, y) =>
       calculateDistance((getX(location), getY(location)), (x, y)) <= maxDistance
@@ -65,7 +62,6 @@ object KafkaProducerDrone {
     // Topic name
     val topic = "drone-message"
 
-    // List("Pierre", "Hugo", "Param", "DarkSasuke")
 
     // Create Report and serialize
     val obj = Report(droneId, location, filteredCitizens.map(_._1) , List(75.3, 75.3, 50.4, 6.9), List("love", "peace", "happy", "hate"))
