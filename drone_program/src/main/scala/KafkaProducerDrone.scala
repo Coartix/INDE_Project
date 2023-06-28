@@ -11,6 +11,7 @@ import scala.io.Source
 import scala.math.{pow, sqrt}
 
 import WorldGenerator.getCitizenList
+import WorldGenerator.getWordList
 
 
 object KafkaProducerDrone {
@@ -44,7 +45,6 @@ object KafkaProducerDrone {
       calculateDistance((getX(location), getY(location)), (x, y)) <= maxDistance
     }
 
-
     val props = new Properties()
     props.put("bootstrap.servers", "localhost:9092")
     props.put(
@@ -62,11 +62,11 @@ object KafkaProducerDrone {
     // Topic name
     val topic = "drone-message"
 
+    // List("love", "peace", "happy", "hate")
 
     // Create Report and serialize
-    val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), List("love", "peace", "happy", "hate"))
+    val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), getWordList(filteredCitizens))
     val json: Json = obj.asJson
-
 
     // Create Producer Record
     val record = new ProducerRecord[String, String](topic, droneId.toString, json.toString)
