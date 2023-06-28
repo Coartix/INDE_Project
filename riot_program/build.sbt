@@ -10,5 +10,6 @@ lazy val root = project
 
     libraryDependencies += "org.scalameta" %% "munit" % "0.7.29" % Test,
     libraryDependencies += "org.apache.kafka" %% "kafka" % "3.4.0",
-    libraryDependencies += "com.typesafe.play" %% "play-json" % "2.9.1"
+    libraryDependencies += "com.typesafe.play" %% "play-json" % "2.9.1",
+    libraryDependencies += "org.apache.httpcomponents" % "httpclient" % "4.5.13"
   )

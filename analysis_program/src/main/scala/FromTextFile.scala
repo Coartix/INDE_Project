@@ -55,19 +55,19 @@ object FromTextFile {
       )
     df.show(false)
     
-    val exploded_citizens = df.select(col("id"), col("location"), posexplode(col("citizens"))).withColumnRenamed("col", "citizen")
+    val exploded_citizens = df.select(col("id"), col("location"), col("words"), posexplode(col("citizens"))).withColumnRenamed("col", "citizen")
     val exploded_scores = df.select(col("id"), posexplode(col("score"))).withColumnRenamed("col", "score")
-    val exploded_words = df.select(col("id"), posexplode(col("words"))).withColumnRenamed("col", "word")
+    //val exploded_words = df.select(col("id"), posexplode(col("words"))).withColumnRenamed("col", "word")
 
     val joined_df = exploded_citizens
       .join(exploded_scores, Seq("id", "pos"))
-      .join(exploded_words, Seq("id", "pos"))
+      //.join(exploded_words, Seq("id", "pos"))
       .drop("pos")
 
     joined_df.show(false)
 
     // analyse data
-    doAnalysis(joined_df)
+    //doAnalysis(joined_df)
 
     // close spark session
     spark.stop()

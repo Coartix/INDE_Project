@@ -9,6 +9,10 @@ import play.api.libs.functional.syntax._
 
 import java.time.{Instant, LocalDateTime, ZoneOffset, Duration}
 
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.entity.StringEntity
+import org.apache.http.impl.client.HttpClientBuilder
+
 object KafkaConsumerRiot {
   case class Report(id: Int, location: List[Double], citizens: List[String], score: List[Int], words: List[String], timestamp: Instant)
 
@@ -38,6 +42,17 @@ object KafkaConsumerRiot {
     consumeMessages(consumer)
   }
 
+  def sendReport(report: String): Unit = {
+    val httpClient = HttpClientBuilder.create().build()
+    val post = new HttpPost("http://localhost:5000/receive-report")
+    post.setHeader("Content-type", "application/json")
+    post.setEntity(new StringEntity(report))
+
+    val response = httpClient.execute(post)
+    // Handle response if needed
+    httpClient.close()
+  }
+
   def AlertRiot(report: Report): Unit = {
     val score = report.score
     val words = report.words
@@ -53,8 +68,10 @@ object KafkaConsumerRiot {
       println(s"timestamp: ${report.timestamp}")
       println(s"drone id: ${report.id}")
 
-      // Send alert to Riot API
+      val serializedReport = Json.toJson(report).toString()
 
+      // Send alert to Riot API
+      sendReport(serializedReport)
     }
   }
 
@@ -69,6 +86,7 @@ object KafkaConsumerRiot {
           case JsSuccess(report, _) =>
             //println(s"Successfully parsed JSON into Report: $report")
             AlertRiot(report)
+
           case JsError(errors) =>
             println(s"Failed to parse JSON: $errors")
             //println(s"Failed JSON: $json")
