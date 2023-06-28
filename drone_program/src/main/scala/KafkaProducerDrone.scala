@@ -10,6 +10,7 @@ import scala.io.Source
 
 import scala.math.{pow, sqrt}
 
+import WorldGenerator.getCitizenList
 
 
 object KafkaProducerDrone {
@@ -35,23 +36,11 @@ object KafkaProducerDrone {
 
   def sendReport(droneId : Int, location: List[Double]): Unit = {
 
-    // Define the file path
-    val filePath = "../data/citizens.txt" // Replace with the actual file path
-
     // Define the maximum distance
-    val maxDistance = 10.0 // Replace with the desired maximum distance
-
-
-
+    val maxDistance = 10.0
 
     // Read the file and create the object
-    val citizenList: List[(String, Double, Double)] = Source.fromFile(filePath)
-      .getLines()
-      .map { line =>
-      val Array(name, x, y) = line.split(" ")
-      (name, x.toDouble, y.toDouble)
-      }.toList
-      
+    val citizenList = getCitizenList("../data/citizens.txt")
     
     // Filter the citizenList based on the distance
     val filteredCitizens = citizenList.filter { case (_, x, y) =>
