@@ -7,32 +7,20 @@ object FromTextFile {
     
     // first analysis
     // compute the average score of each citizen
-    val avg_score = df
-      .groupBy("citizen")
-      .agg(avg("score"))
-      .withColumnRenamed("avg(score)", "avg_score")
-      .sort(desc("avg_score"))
+    //val avg_score_by_citizen = ...
 
-    avg_score.show(false)
+    //avg_score_by_citizen.show(false)
 
     // and sort every location by the average score of its citizens
-    val avg_score_by_location = df
-      .groupBy("location")
-      .agg(avg("score"))
-      .withColumnRenamed("avg(score)", "avg_score")
-      .sort(desc("avg_score"))
+    //val avg_score_by_location = ...
 
-    avg_score_by_location.show(false)
+    //avg_score_by_location.show(false)
 
     // second analysis
     // show words used by citizen with score < 0.25 and the number of times they used it
-    val words_below_threshold = df
-    .filter(col("score") < 25)
-    .groupBy("word")
-    .agg(count("word").as("times_used"))
-    .sort(desc("times_used"))
+    //val words_below_threshold = ...
 
-    words_below_threshold.show(false)
+    //words_below_threshold.show(false)
 
     // third analysis
     // 
@@ -50,24 +38,13 @@ object FromTextFile {
       .getOrCreate()
 
     //read multiple files
-    val df = spark.read.json(
+    val df = spark.read.parquet(
       "s3a://coartixbucket/"
       )
     df.show(false)
-    
-    val exploded_citizens = df.select(col("id"), col("location"), col("words"), posexplode(col("citizens"))).withColumnRenamed("col", "citizen")
-    val exploded_scores = df.select(col("id"), posexplode(col("score"))).withColumnRenamed("col", "score")
-    //val exploded_words = df.select(col("id"), posexplode(col("words"))).withColumnRenamed("col", "word")
-
-    val joined_df = exploded_citizens
-      .join(exploded_scores, Seq("id", "pos"))
-      //.join(exploded_words, Seq("id", "pos"))
-      .drop("pos")
-
-    joined_df.show(false)
 
     // analyse data
-    //doAnalysis(joined_df)
+    doAnalysis(df)
 
     // close spark session
     spark.stop()
