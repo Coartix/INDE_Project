@@ -9,7 +9,7 @@ object WorldGenerator {
             .getLines()
             .map { line =>
                 val Array(name, x, y) = line.split(" ")
-                (name, x.toDouble, y.toDouble, Random.nextInt(26) + 75)
+                (name, x.toDouble * (135 - 73) / 100 + 73 , y.toDouble * (54 - 18) / 100 + 18, Random.nextInt(26) + 75)
             }.toList
     }
 
