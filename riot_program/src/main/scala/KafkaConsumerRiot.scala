@@ -68,10 +68,14 @@ object KafkaConsumerRiot {
       println(s"timestamp: ${report.timestamp}")
       println(s"drone id: ${report.id}")
 
-      val serializedReport = Json.toJson(report).toString()
+      try {
+        val serializedReport = Json.toJson(report).toString()
 
-      // Send alert to Riot API
-      sendReport(serializedReport)
+        // Send alert to Riot API
+        sendReport(serializedReport)
+      } catch {
+        case e: Exception => println("Failed to send report to Riot API")
+      }
     }
   }
 
