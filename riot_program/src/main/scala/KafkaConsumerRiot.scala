@@ -59,7 +59,7 @@ object KafkaConsumerRiot {
     val citizens = report.citizens
     val location = report.location
 
-    val alert = score.zip(citizens).filter(_._1 > 85.0).map(_._2).mkString(", ")
+    val alert = score.zip(citizens).filter(_._1 < 25.0).map(_._2).mkString(", ")
 
     if (alert != "") {
       println(s"Alert: $alert")

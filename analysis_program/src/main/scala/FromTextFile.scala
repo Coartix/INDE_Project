@@ -26,7 +26,7 @@ object FromTextFile {
     // plot the words used in places with low harmony score
     println("Second analysis")
     println("words used in places with low harmony score")
-    val words_below_threshold = df.filter(col("score") > 25)
+    val words_below_threshold = df.filter(col("score") < 25)
       .select(col("citizen"), explode(col("words")).as("word"))
       .groupBy("word").count()
       .orderBy(desc("count"))
