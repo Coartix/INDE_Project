@@ -6,6 +6,8 @@ import io.circe.generic.auto._
 import io.circe.parser._
 import io.circe.syntax._
 import io.circe.syntax.EncoderOps
+import io.circe.parser.decode
+
 
 import scala.util.Random
 
@@ -24,7 +26,10 @@ import scala.concurrent.duration.Duration
 import java.time.Instant
 
 import KafkaProducerDrone.getMessage
+import KafkaProducerDrone.Report
 import WorldGenerator.getCitizenList
+
+import scala.io.Source
 
 
 object DroneGenerator {
@@ -49,6 +54,20 @@ object DroneGenerator {
         producer.send(record)
     }
 
+    def jsonToReport(message: Json): Report = {
+        val report: Either[Error, Report] = decode[Report](message.toString)
+
+        report match {
+            case Right(result) => result// Successfully deserialized
+            case _ => Report(1, List(0.0, 0.0), List("ERROR", "ERROR", "ERROR"), List(0), List("ERROR"), Instant.now())
+        }
+        
+    }
+
+    def updateCitizenList(message: Report, citizenList: List[(String, Double, Double, Int)]): List[(String, Double, Double, Int)] = {
+        citizenList.map { case (name, x, y, harmonyScore) => (name, x, y, harmonyScore + Random.nextInt(7) - 3)}
+    }
+
     def simulateIteration(generation: Int, counter: Int, drones: List[Drone], originTimestamp: Instant, citizenList: List[(String, Double, Double, Int)], producer: KafkaProducer[String, String]): Unit = counter match {
         case counter if (counter == generation) => {
             val messages = drones.map(drone => (drone.id.toString, getMessage(drone.id, moveDrone(drone.location), citizenList, originTimestamp, counter)))
@@ -58,7 +77,11 @@ object DroneGenerator {
             val messages = drones.map(drone => (drone.id.toString, getMessage(drone.id, moveDrone(drone.location), citizenList, originTimestamp, counter)))
             messages.foreach { case (droneId, message) => sendReport(droneId, message, producer) } 
 
-            simulateIteration(generation, counter + 1, drones, originTimestamp, citizenList, producer)
+            val reports = messages.map { case (droneId, message) => jsonToReport(message) }
+
+            val newCitizenList = reports.foldLeft(citizenList)((acc, num) => updateCitizenList(num, acc))
+
+            simulateIteration(generation, counter + 1, drones, originTimestamp, newCitizenList, producer)
         }
     }
 
