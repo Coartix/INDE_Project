@@ -124,9 +124,9 @@ object DroneGenerator {
 
     def main(args: Array[String]) : Unit = {
 
-        // val goodWords: List[String] = Source.fromFile("../data/good_words.txt").getLines().toList
+        val goodWords: List[String] = Source.fromFile("../data/good_words.txt").getLines().toList
 
-        // val badWords: List[String] = Source.fromFile("../data/bad_words.txt").getLines().toList
+        val badWords: List[String] = Source.fromFile("../data/bad_words.txt").getLines().toList
 
 
         val props = new Properties()
@@ -149,9 +149,9 @@ object DroneGenerator {
 
         // Get citizen list
 
-        val citizenList = getCitizenList(List(("Param", 0, 0), ("Hugo", 50, 50), ("Pierre", 99, 99)))
+        val citizenList = getCitizenList("../data/citizens.txt")
 
-        simulateIteration(1000, 0, drones, originTimestamp, citizenList, producer, List("Good", "Happy"), List("Bad", "Angry"))
+        simulateIteration(10, 0, drones, originTimestamp, citizenList, producer, goodWords, badWords)
 
         // Source.fromFile("../data/good_words.txt").close()
         // Source.fromFile("../data/bad_words.txt").close()

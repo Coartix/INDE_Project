@@ -3,10 +3,14 @@ import scala.util.Random
 
 
 object WorldGenerator {
-    def getCitizenList(list: List[(String, Double, Double)]): List[(String, Double, Double, Int)] = {
-        list.map { case (name, x, y) =>
-                (name, x, y, Random.nextInt(26) + 40)
-            }
+
+    def getCitizenList(filePath : String): List[(String, Double, Double, Int)] = {
+        Source.fromFile(filePath)
+            .getLines()
+            .map { line =>
+                val Array(name, x, y) = line.split(" ")
+                (name, x.toDouble, y.toDouble, Random.nextInt(26) + 75)
+            }.toList
     }
 
     def pickRandomWord(words: List[String]): String = {
