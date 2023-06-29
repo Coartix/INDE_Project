@@ -24,8 +24,8 @@ object WorldGenerator {
         Source.fromFile(filePath)
             .getLines()
             .map { line =>
-                val Array(name, x, y) = line.split(" ")
-                (name, convertToLongitude(x.toDouble) , convertToLatitude(y.toDouble), Random.nextInt(20) + 40)
+                val Array(name, _, _) = line.split(" ")
+                (name, Random.nextInt(360).toDouble - 180 , Random.nextInt(180).toDouble - 90, Random.nextInt(20) + 40)
             }.toList
     }
 

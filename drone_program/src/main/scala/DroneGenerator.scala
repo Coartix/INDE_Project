@@ -45,7 +45,7 @@ object DroneGenerator {
 
     def generateDrone(n : Int): List[Drone] = n match {
         case 0 => Nil
-        case n => Drone(n, List(convertToLongitude(Random.nextInt(100)), convertToLatitude(Random.nextInt(100)))) :: generateDrone(n - 1)
+        case n => Drone(n, List(Random.nextInt(360).toDouble - 180 , Random.nextInt(180).toDouble - 90)) :: generateDrone(n - 1)
     }
 
     def sendReport(droneId: String, message: Json, producer: KafkaProducer[String, String]): Unit = {
