@@ -34,7 +34,7 @@ object KafkaSparkConsumerStore {
       .format("kafka")
       .option("kafka.bootstrap.servers", "localhost:9092")
       .option("subscribe", "drone-message")
-      .option("startingOffsets", "earliest") // Start reading from the earliest message
+      .option("failOnDataLoss", "false")
       .load()
 
     // Cast the value in the dataframe to string
