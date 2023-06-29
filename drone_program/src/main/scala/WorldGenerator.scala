@@ -4,20 +4,18 @@ import scala.util.Random
 
 object WorldGenerator {
 
-    def convertToLongitude(x: Double): Double = {
-        val gridWidth = 100
-
-        val longitudeRange = (-180.0, 180.0)
-
-        ((x.toDouble / gridWidth) * (longitudeRange._2 - longitudeRange._1)) + longitudeRange._1
+    def generateLongitude(): Double = {
+        val minLon = 73.7
+        val maxLon = 135.1
+        
+        Random.between(minLon, maxLon)
     }
-    
-    def convertToLatitude(y: Double): Double = {
-        val gridHeight = 100
 
-        val latitudeRange = (-90.0, 90.0)
+    def generateLatitude(): Double = {
+        val minLat = 18.2
+        val maxLat = 53.6
 
-        ((y.toDouble / gridHeight) * (latitudeRange._2 - latitudeRange._1)) + latitudeRange._1
+        Random.between(minLat, maxLat)
     }
 
     def getCitizenList(filePath : String): List[(String, Double, Double, Int)] = {
@@ -25,7 +23,7 @@ object WorldGenerator {
             .getLines()
             .map { line =>
                 val Array(name, _, _) = line.split(" ")
-                (name, Random.nextInt(360).toDouble - 180 , Random.nextInt(180).toDouble - 90, Random.nextInt(20) + 40)
+                (name, generateLatitude(), generateLongitude, Random.nextInt(20) + 40)
             }.toList
     }
 

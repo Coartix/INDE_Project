@@ -28,8 +28,8 @@ import java.time.Instant
 import KafkaProducerDrone.getMessage
 import KafkaProducerDrone.Report
 import WorldGenerator.getCitizenList
-import WorldGenerator.convertToLatitude
-import WorldGenerator.convertToLongitude
+import WorldGenerator.generateLatitude
+import WorldGenerator.generateLongitude
 
 import scala.io.Source
 
@@ -45,7 +45,7 @@ object DroneGenerator {
 
     def generateDrone(n : Int): List[Drone] = n match {
         case 0 => Nil
-        case n => Drone(n, List(Random.nextInt(360).toDouble - 180 , Random.nextInt(180).toDouble - 90)) :: generateDrone(n - 1)
+        case n => Drone(n, List(generateLatitude() , generateLongitude())) :: generateDrone(n - 1)
     }
 
     def sendReport(droneId: String, message: Json, producer: KafkaProducer[String, String]): Unit = {
@@ -75,16 +75,18 @@ object DroneGenerator {
                 acc - 1
             }
         }
-        /*if (res > -3 && res < 3) {
+        if (res > -1 && res < 1) {
             0
         }
         else if (res > 3) {
-            1
+            3
+        }
+        else if (res < -3){
+            -3
         }
         else {
-            -1
-        }*/
-        res
+            res
+        }
     }
 
     def updateCitizenList(message: Report, citizenList: List[(String, Double, Double, Int)], goodWords: List[String]): List[(String, Double, Double, Int)] = {
@@ -146,7 +148,7 @@ object DroneGenerator {
         // Create producer
         val producer = new KafkaProducer[String, String](props)
 
-        val drones = generateDrone(15)
+        val drones = generateDrone(7)
         
         val originTimestamp: Instant = Instant.now()
 
