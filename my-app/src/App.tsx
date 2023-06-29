@@ -25,10 +25,9 @@ const App: React.FC = () => {
   const [positions, setPositions] = useState<number[][] | null>(null);
 
   const iconPerson = new L.Icon({
-    iconUrl: require('./happyFace.png'),
-    iconRetinaUrl: require('./happyFace.png'),
-    iconSize: new L.Point(15, 15),
-    className: 'leaflet-div-icon'
+    iconUrl: require('./harmonylogo.png'),
+    iconRetinaUrl: require('./harmonylogo.png'),
+    iconSize: new L.Point(25, 25)
   });
 
   useEffect(() => {
@@ -97,7 +96,7 @@ const App: React.FC = () => {
               {positions.map((position, index) => (
                 <Marker key={index} position={position as any} icon={iconPerson}>
                   <Popup>
-                    <img src="https://www.flaticon.com/svg/static/icons/svg/2938/2938617.svg" alt="icon" width="30" height="30" />
+                    Alert at position {position.join(", ")}
                   </Popup>
                 </Marker>
               ))}

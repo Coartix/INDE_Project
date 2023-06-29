@@ -20,8 +20,8 @@
 }
 
 .leaflet-container {
-  width: 550px;
-  height: 550px;
+  width: 70vh;
+  height: 70vh;
 }
 
 @media (prefers-reduced-motion: no-preference) {
