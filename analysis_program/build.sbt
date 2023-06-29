@@ -18,7 +18,7 @@ lazy val root = project
       "org.apache.spark" %% "spark-sql" % sparkVersion
     )
     },
-    libraryDependencies += "org.apache.hadoop" % "hadoop-aws" % "3.2.0",
+    libraryDependencies += "org.apache.hadoop" % "hadoop-aws" % "3.3.4",
     libraryDependencies += "org.apache.hadoop" % "hadoop-client" % "3.3.4"
 
   )

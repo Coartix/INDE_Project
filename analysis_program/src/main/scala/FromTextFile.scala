@@ -56,6 +56,20 @@ object FromTextFile {
       .groupBy("citizen").agg(collect_set("drone_id").as("drones"))
 
     drones_by_citizen.show(false)
+
+    // save results
+    println("saving results")
+    try {
+    avg_score_by_citizen.write.mode("overwrite").parquet("s3a://coartixanalysisbucket/avg_score_by_citizen.parquet")
+    avg_score_by_location.write.mode("overwrite").parquet("s3a://coartixanalysisbucket/avg_score_by_location.parquet")
+    words_below_threshold.write.mode("overwrite").parquet("s3a://coartixanalysisbucket/words_below_threshold.parquet")
+    score_evolution.write.mode("overwrite").parquet("s3a://coartixanalysisbucket/score_evolution.parquet")
+    drones_by_citizen.write.mode("overwrite").parquet("s3a://coartixanalysisbucket/drones_by_citizen.parquet")
+    } catch {
+      case e: Exception => println("error while saving results")
+    } finally {
+      println("results saved")
+    }
   }
 
 
