@@ -23,7 +23,13 @@ object FromTextFile {
     //words_below_threshold.show(false)
 
     // third analysis
-    // 
+    // show for each citizen their score evolution from the first timestamp to the last
+    //val score_evolution = ...
+
+    //score_evolution.show(false)
+
+    // fourth analysis
+    
   }
 
 
