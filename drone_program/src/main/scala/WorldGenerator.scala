@@ -3,33 +3,29 @@ import scala.util.Random
 
 
 object WorldGenerator {
-    def getCitizenList(filePath : String): List[(String, Double, Double, Int)] = {
-        Source.fromFile(filePath)
-            .getLines()
-            .map { line =>
-                val Array(name, x, y) = line.split(" ")
-                (name, x.toDouble, y.toDouble, Random.nextInt(21) + 60)
-            }.toList
+    def getCitizenList(list: List[(String, Double, Double)]): List[(String, Double, Double, Int)] = {
+        list.map { case (name, x, y) =>
+                (name, x, y, Random.nextInt(26) + 40)
+            }
     }
 
-    def pickRandomWord(filePath: String): String = {
-        val lines: List[String] = Source.fromFile(filePath).getLines().toList
-        Random.shuffle(lines).headOption.getOrElse("")
+    def pickRandomWord(words: List[String]): String = {
+        Random.shuffle(words).headOption.getOrElse("")
     }
 
-    def getCitizenWord(harmonyScore: Int): String = Random.nextInt(101) < harmonyScore match {
-        case true => pickRandomWord("../data/good_words.txt")
-        case false => pickRandomWord("../data/bad_words.txt")
+    def getCitizenWord(harmonyScore: Int, goodWords: List[String], badWords: List[String]): String = Random.nextInt(120) < harmonyScore match {
+        case true => pickRandomWord(goodWords)
+        case false => pickRandomWord(badWords)
     }
 
-    def getCitizenWordList(harmonyScore: Int, n : Int): List[String] = n match {
+    def getCitizenWordList(harmonyScore: Int, n : Int, goodWords: List[String], badWords: List[String]): List[String] = n match {
         case 0 => Nil
-        case e => getCitizenWord(harmonyScore) :: getCitizenWordList(harmonyScore, e - 1)
+        case e => getCitizenWord(harmonyScore, goodWords, badWords) :: getCitizenWordList(harmonyScore, e - 1, goodWords, badWords)
     }
 
-    def getWordList(citizenList: List[(String, Double, Double, Int)]): List[String] = {
+    def getWordList(citizenList: List[(String, Double, Double, Int)], goodWords: List[String], badWords: List[String]): List[String] = {
         citizenList.flatMap { case (_, _, _, harmonyScore) =>
-            getCitizenWordList(harmonyScore, 3)
+            getCitizenWordList(harmonyScore, 3, goodWords, badWords)
         }
     }
 }

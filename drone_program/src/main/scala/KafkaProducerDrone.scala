@@ -43,8 +43,9 @@ object KafkaProducerDrone {
     originTimestamp.plus(nbIter, ChronoUnit.MINUTES)
   }
 
-  def getMessage(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Int)], originTimestamp: Instant, nbIter: Int): Json = {
+  def getMessage(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Int)], originTimestamp: Instant, nbIter: Int, goodWords: List[String], badWords: List[String]): Json = {
     // Define the maximum distance
+    
     val maxDistance = 10.0
 
     // Filter the citizenList based on the distance
@@ -70,7 +71,7 @@ object KafkaProducerDrone {
     val topic = "drone-message"
 
     // Create Report and serialize
-    val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), getWordList(filteredCitizens), getTimestamp(originTimestamp, nbIter))
+    val obj = Report(droneId, location, filteredCitizens.map(_._1) , filteredCitizens.map(_._4), getWordList(filteredCitizens, goodWords, badWords), getTimestamp(originTimestamp, nbIter))
     // val json: Json = obj.asJson
 
     obj.asJson

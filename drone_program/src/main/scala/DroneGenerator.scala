@@ -64,33 +64,31 @@ object DroneGenerator {
         
     }
 
-    def changeValue(words: List[String]): Int = {
-        val goodWords: List[String] = Source.fromFile("../data/good_words.txt").getLines().toList
-
+    def changeValue(words: List[String], goodWords: List[String]): Int = {
         val res = words.foldLeft(0) { (acc, element) =>
             if (goodWords.contains(element)) {
-                acc + 1
+                acc + 2
             }
             else {
-                acc - 1
+                acc - 3
             }
         }
-        if (res < -3) {
-            -3
+        if (res > -3 && res < 3) {
+            0
         }
         else if (res > 3) {
-            3
+            1
         }
         else {
-            res
+            -1
         }
     }
 
-    def updateCitizenList(message: Report, citizenList: List[(String, Double, Double, Int)]): List[(String, Double, Double, Int)] = {
+    def updateCitizenList(message: Report, citizenList: List[(String, Double, Double, Int)], goodWords: List[String]): List[(String, Double, Double, Int)] = {
 
         citizenList.map { case (name, x, y, harmonyScore) =>
             if (message.citizens.contains(name)) {
-                val change = changeValue(message.words)
+                val change = changeValue(message.words, goodWords)
                 if (harmonyScore + change > 100) {
                     (name, x, y, 100)
                 }
@@ -107,24 +105,29 @@ object DroneGenerator {
             }
     }
 
-    def simulateIteration(generation: Int, counter: Int, drones: List[Drone], originTimestamp: Instant, citizenList: List[(String, Double, Double, Int)], producer: KafkaProducer[String, String]): Unit = counter match {
+    def simulateIteration(generation: Int, counter: Int, drones: List[Drone], originTimestamp: Instant, citizenList: List[(String, Double, Double, Int)], producer: KafkaProducer[String, String], goodWords: List[String], badWords: List[String]): Unit = counter match {
         case counter if (counter == generation) => {
-            val messages = drones.map(drone => (drone.id.toString, getMessage(drone.id, moveDrone(drone.location), citizenList, originTimestamp, counter)))
+            val messages = drones.map(drone => (drone.id.toString, getMessage(drone.id, moveDrone(drone.location), citizenList, originTimestamp, counter, goodWords, badWords)))
             messages.foreach { case (droneId, message) => sendReport(droneId, message, producer) } 
         }
         case counter => {
-            val messages = drones.map(drone => (drone.id.toString, getMessage(drone.id, moveDrone(drone.location), citizenList, originTimestamp, counter)))
+            val messages = drones.map(drone => (drone.id.toString, getMessage(drone.id, moveDrone(drone.location), citizenList, originTimestamp, counter, goodWords, badWords)))
             messages.foreach { case (droneId, message) => sendReport(droneId, message, producer) } 
 
             val reports = messages.map { case (droneId, message) => jsonToReport(message) }
 
-            val newCitizenList = reports.foldLeft(citizenList)((acc, num) => updateCitizenList(num, acc))
+            val newCitizenList = reports.foldLeft(citizenList)((acc, num) => updateCitizenList(num, acc, goodWords))
 
-            simulateIteration(generation, counter + 1, drones, originTimestamp, newCitizenList, producer)
+            simulateIteration(generation, counter + 1, drones, originTimestamp, newCitizenList, producer, goodWords, badWords)
         }
     }
 
     def main(args: Array[String]) : Unit = {
+
+        // val goodWords: List[String] = Source.fromFile("../data/good_words.txt").getLines().toList
+
+        // val badWords: List[String] = Source.fromFile("../data/bad_words.txt").getLines().toList
+
 
         val props = new Properties()
         props.put("bootstrap.servers", "localhost:9092")
@@ -145,9 +148,13 @@ object DroneGenerator {
         val originTimestamp: Instant = Instant.now()
 
         // Get citizen list
-        val citizenList = getCitizenList("../data/citizens.txt")
 
-        simulateIteration(50, 0, drones, originTimestamp, citizenList, producer)
+        val citizenList = getCitizenList(List(("Param", 0, 0), ("Hugo", 50, 50), ("Pierre", 99, 99)))
+
+        simulateIteration(1000, 0, drones, originTimestamp, citizenList, producer, List("Good", "Happy"), List("Bad", "Angry"))
+
+        // Source.fromFile("../data/good_words.txt").close()
+        // Source.fromFile("../data/bad_words.txt").close()
 
         // Close producer
         producer.close()
