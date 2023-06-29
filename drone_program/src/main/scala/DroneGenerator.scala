@@ -64,8 +64,47 @@ object DroneGenerator {
         
     }
 
+    def changeValue(words: List[String]): Int = {
+        val goodWords: List[String] = Source.fromFile("../data/good_words.txt").getLines().toList
+
+        val res = words.foldLeft(0) { (acc, element) =>
+            if (goodWords.contains(element)) {
+                acc + 1
+            }
+            else {
+                acc - 1
+            }
+        }
+        if (res < -3) {
+            -3
+        }
+        else if (res > 3) {
+            3
+        }
+        else {
+            res
+        }
+    }
+
     def updateCitizenList(message: Report, citizenList: List[(String, Double, Double, Int)]): List[(String, Double, Double, Int)] = {
-        citizenList.map { case (name, x, y, harmonyScore) => (name, x, y, harmonyScore + Random.nextInt(7) - 3)}
+
+        citizenList.map { case (name, x, y, harmonyScore) =>
+            if (message.citizens.contains(name)) {
+                val change = changeValue(message.words)
+                if (harmonyScore + change > 100) {
+                    (name, x, y, 100)
+                }
+                else if (harmonyScore + change < 0) {
+                    (name, x, y, 0)
+                }
+                else {
+                    (name, x, y, harmonyScore + change)
+                }
+                
+            }
+            else {
+                (name, x, y, harmonyScore)}
+            }
     }
 
     def simulateIteration(generation: Int, counter: Int, drones: List[Drone], originTimestamp: Instant, citizenList: List[(String, Double, Double, Int)], producer: KafkaProducer[String, String]): Unit = counter match {

@@ -8,7 +8,7 @@ object WorldGenerator {
             .getLines()
             .map { line =>
                 val Array(name, x, y) = line.split(" ")
-                (name, x.toDouble, y.toDouble, Random.nextInt(26) + 75)
+                (name, x.toDouble, y.toDouble, Random.nextInt(21) + 60)
             }.toList
     }
 
@@ -17,7 +17,7 @@ object WorldGenerator {
         Random.shuffle(lines).headOption.getOrElse("")
     }
 
-    def getCitizenWord(harmonyScore: Int): String = Random.nextInt(100) < harmonyScore match {
+    def getCitizenWord(harmonyScore: Int): String = Random.nextInt(101) < harmonyScore match {
         case true => pickRandomWord("../data/good_words.txt")
         case false => pickRandomWord("../data/bad_words.txt")
     }
