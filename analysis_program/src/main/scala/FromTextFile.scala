@@ -1,35 +1,52 @@
 import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import org.apache.spark.sql.functions._
+//import org.apache.spark.sql.functions.{avg, col, desc, explode}
+import org.apache.spark.sql.expressions.Window
+//import org.apache.spark.sql.functions.{first, last}
 
 object FromTextFile {
   def doAnalysis(df: DataFrame): Unit = {
     // Analyse data
-    
-    // first analysis
-    // compute the average score of each citizen
-    //val avg_score_by_citizen = ...
 
-    //avg_score_by_citizen.show(false)
+    // First analysis
+    // plot the average score by citizen
+    val avg_score_by_citizen = df.groupBy("citizen").agg(avg("score").as("avg_score"))
+    avg_score_by_citizen.show(false)
 
-    // and sort every location by the average score of its citizens
-    //val avg_score_by_location = ...
+    // and plot the average score by location
+    val avg_score_by_location = avg_score_by_citizen.join(df, "citizen")
+      .groupBy("location").agg(avg("avg_score").as("avg_location_score"))
+      .orderBy(desc("avg_location_score"))
+    avg_score_by_location.show(false)
 
-    //avg_score_by_location.show(false)
+    // Second analysis
+    // plot the words used in places with low harmony score
+    val words_below_threshold = df.filter(col("score") > 25)
+      .select(col("citizen"), explode(col("words")).as("word"))
+      .groupBy("word").count()
+      .orderBy(desc("count"))
 
-    // second analysis
-    // show words used by citizen with score < 0.25 and the number of times they used it
-    //val words_below_threshold = ...
+    words_below_threshold.show(false)
 
-    //words_below_threshold.show(false)
+    // Third analysis
+    // plot the evolution of the score for each citizen
+    val first_report = df.withColumn("rn", row_number().over(Window.partitionBy("citizen").orderBy("timestamp")))
+      .where(col("rn") === 1).drop("rn").select(col("citizen"), col("score").as("first_score"))
 
-    // third analysis
-    // show for each citizen their score evolution from the first timestamp to the last
-    //val score_evolution = ...
+    val last_report = df.withColumn("rn", row_number().over(Window.partitionBy("citizen").orderBy(col("timestamp").desc)))
+      .where(col("rn") === 1).drop("rn").select(col("citizen"), col("score").as("last_score"))
 
-    //score_evolution.show(false)
+    val score_evolution = first_report.join(last_report, "citizen")
+      .withColumn("score_diff", col("last_score") - col("first_score"))
+  
+    score_evolution.show(false)
 
-    // fourth analysis
-    
+    // Fourth analysis
+    // plot for each citizen all the drones that have been in the same location
+    val drones_by_citizen = df.select(col("citizen"), col("drone_id"), col("location"))
+      .groupBy("citizen").agg(collect_set("drone_id").as("drones"))
+
+    drones_by_citizen.show(false)
   }
 
 
@@ -48,9 +65,29 @@ object FromTextFile {
       "s3a://coartixbucket/"
       )
     df.show(false)
+    
+    val explodedDF = df
+      .select(
+        col("id").as("drone_id"),
+        col("location"),
+        col("timestamp"),
+        col("words"),
+        explode(arrays_zip(col("citizens"), col("score"))).as("values")
+      )
+      .select(
+        col("drone_id"),
+        col("location"),
+        col("timestamp"),
+        col("words"),
+        col("values.citizens").as("citizen"),
+        col("values.score").as("score")
+      )
+
+    explodedDF.show(false)
+
 
     // analyse data
-    doAnalysis(df)
+    doAnalysis(explodedDF)
 
     // close spark session
     spark.stop()
