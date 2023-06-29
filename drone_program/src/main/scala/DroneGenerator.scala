@@ -28,6 +28,8 @@ import java.time.Instant
 import KafkaProducerDrone.getMessage
 import KafkaProducerDrone.Report
 import WorldGenerator.getCitizenList
+import WorldGenerator.convertToLatitude
+import WorldGenerator.convertToLongitude
 
 import scala.io.Source
 
@@ -43,7 +45,7 @@ object DroneGenerator {
 
     def generateDrone(n : Int): List[Drone] = n match {
         case 0 => Nil
-        case n => Drone(n, List(Random.nextInt(100) * (135 - 73) / 100 + 73, Random.nextInt(100) * (54 - 18) / 100 + 18)) :: generateDrone(n - 1)
+        case n => Drone(n, List(convertToLongitude(Random.nextInt(100)), convertToLatitude(Random.nextInt(100)))) :: generateDrone(n - 1)
     }
 
     def sendReport(droneId: String, message: Json, producer: KafkaProducer[String, String]): Unit = {
@@ -67,13 +69,13 @@ object DroneGenerator {
     def changeValue(words: List[String], goodWords: List[String]): Int = {
         val res = words.foldLeft(0) { (acc, element) =>
             if (goodWords.contains(element)) {
-                acc + 2
+                acc + 1
             }
             else {
-                acc - 4
+                acc - 1
             }
         }
-        if (res > -3 && res < 3) {
+        /*if (res > -3 && res < 3) {
             0
         }
         else if (res > 3) {
@@ -81,7 +83,8 @@ object DroneGenerator {
         }
         else {
             -1
-        }
+        }*/
+        res
     }
 
     def updateCitizenList(message: Report, citizenList: List[(String, Double, Double, Int)], goodWords: List[String]): List[(String, Double, Double, Int)] = {
@@ -143,7 +146,7 @@ object DroneGenerator {
         // Create producer
         val producer = new KafkaProducer[String, String](props)
 
-        val drones = generateDrone(3)
+        val drones = generateDrone(15)
         
         val originTimestamp: Instant = Instant.now()
 
