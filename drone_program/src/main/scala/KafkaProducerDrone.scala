@@ -46,7 +46,7 @@ object KafkaProducerDrone {
   def getMessage(droneId : Int, location: List[Double], citizenList: List[(String, Double, Double, Int)], originTimestamp: Instant, nbIter: Int, goodWords: List[String], badWords: List[String]): Json = {
     // Define the maximum distance
     
-    val maxDistance = 10.0
+    val maxDistance = 3.0
 
     // Filter the citizenList based on the distance
     val filteredCitizens = citizenList.filter { case (_, x, y, _) =>

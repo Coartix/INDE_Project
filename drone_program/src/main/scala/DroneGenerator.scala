@@ -43,7 +43,7 @@ object DroneGenerator {
 
     def generateDrone(n : Int): List[Drone] = n match {
         case 0 => Nil
-        case n => Drone(n, List(Random.nextInt(100), Random.nextInt(100))) :: generateDrone(n - 1)
+        case n => Drone(n, List(Random.nextInt(100) * (135 - 73) / 100 + 73, Random.nextInt(100) * (54 - 18) / 100 + 18)) :: generateDrone(n - 1)
     }
 
     def sendReport(droneId: String, message: Json, producer: KafkaProducer[String, String]): Unit = {
@@ -70,7 +70,7 @@ object DroneGenerator {
                 acc + 2
             }
             else {
-                acc - 3
+                acc - 4
             }
         }
         if (res > -3 && res < 3) {
@@ -143,7 +143,7 @@ object DroneGenerator {
         // Create producer
         val producer = new KafkaProducer[String, String](props)
 
-        val drones = generateDrone(2)
+        val drones = generateDrone(3)
         
         val originTimestamp: Instant = Instant.now()
 
